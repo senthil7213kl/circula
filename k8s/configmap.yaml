@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: circula-config
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  DB_URL: jdbc:postgresql://circula-db:5432/circula
+  DB_USERNAME: circula
+  DB_DRIVER: org.postgresql.Driver
+  # For a fresh demo cluster. Production deployments should use reviewed migrations and validate.
+  DDL_AUTO: update
+  OPENAPI_ENABLED: "true"
+  PORT: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: circula-db
+spec:
+  selector:
+    app: circula-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: circula-db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
